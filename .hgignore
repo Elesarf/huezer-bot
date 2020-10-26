@@ -1,0 +1,3 @@
+syntax: glob
+key.pem
+cert.pem
