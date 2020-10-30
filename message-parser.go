@@ -93,6 +93,15 @@ func messageParse(message *InternalMessage, bot *tgbotapi.BotAPI) {
 		return
 	}
 
+	if strings.Contains(message.messageText, "чо по короне в") {
+		log.Println("Have corona query")
+
+		str = strings.Replace(message.messageText, "чо по короне в", "", -1)
+		str = strings.TrimSpace(str)
+		message.messageText = processCoronaQuery(str)
+		return
+	}
+
 	// get weater section
 	// try check weather, and add new city in base
 	if !strings.Contains(message.messageText, "ебни погодку в") {

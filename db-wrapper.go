@@ -10,6 +10,7 @@ type baseWord struct {
 	key      string
 	value    string
 	username string
+	state    string
 }
 
 func insertIntoDB(key string, value string, db *sql.DB, user string) error {
@@ -33,10 +34,23 @@ func getValue(key string, db *sql.DB) string {
 	row := db.QueryRow("select * from dictionary where key=$1", key)
 	// cast row to baseWord
 	word := baseWord{}
-	row.Scan(&word.key, &word.value, &word.username)
+	row.Scan(&word.key, &word.value, &word.username, &word.state)
 
 	log.Println(word)
 	return word.value
+}
+
+func getValueState(key string, db *sql.DB) string {
+	key = strings.Title(key)
+	log.Println("Get value to key: " + key)
+	// query first row from db
+	row := db.QueryRow("select * from dictionary where key=$1", key)
+	// cast row to baseWord
+	word := baseWord{}
+	row.Scan(&word.key, &word.value, &word.username, &word.state)
+
+	log.Println(word)
+	return word.state
 }
 
 // base have key?
@@ -48,7 +62,7 @@ func checkKey(key string, db *sql.DB) bool {
 	row := db.QueryRow("select * from dictionary where key=$1", key)
 	// cast to baseWord
 	word := baseWord{}
-	row.Scan(&word.key, &word.value, &word.username)
+	row.Scan(&word.key, &word.value, &word.username, &word.state)
 	log.Println(word)
 
 	if word.key != "" {

@@ -1,41 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
-	"net/url"
-	"os"
 	"strings"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	_ "github.com/mattn/go-sqlite3"
-	"golang.org/x/net/proxy"
 )
 
 // SystemConfig contains system config
 var SystemConfig ConfigData
-
-// ProxyAwareHTTPClient for using proxy
-func ProxyAwareHTTPClient() *http.Client {
-	var dialer proxy.Dialer
-	dialer = proxy.Direct
-	// read env and, if set proxy, apply
-	proxyServer, isSet := os.LookupEnv("HTTP_PROXY")
-	if isSet {
-		proxyURL, err := url.Parse(proxyServer)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Invalid proxy url %q\n", proxyURL)
-		}
-		dialer, err = proxy.FromURL(proxyURL, proxy.Direct)
-		_check(err)
-	}
-	// setup a http client
-	httpTransport := &http.Transport{}
-	httpClient := &http.Client{Transport: httpTransport}
-	httpTransport.Dial = dialer.Dial
-	return httpClient
-}
 
 func _check(err error) {
 	if err != nil {
@@ -48,9 +22,8 @@ func main() {
 
 	SystemConfig = loadConfigFromEnv()
 
-	client := ProxyAwareHTTPClient()
 	// create bot using token, client
-	bot, err := tgbotapi.NewBotAPIWithClient(SystemConfig.botAPIKey, client)
+	bot, err := tgbotapi.NewBotAPI(SystemConfig.botAPIKey)
 	_check(err)
 
 	// debug mode on
